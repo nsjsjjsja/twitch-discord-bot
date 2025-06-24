@@ -55,7 +55,7 @@ async def check_title_loop():
                 current_title = data["data"][0]["title"]
                 if current_title != last_title:
                     last_title = current_title
-                    await channel.send(f"🔴 **{TWITCH_USERNAME}** changed stream title to:\n> **{current_title}**")
+                    await channel.send(f"@everyone 🔴 **{TWITCH_USERNAME}** changed stream title to:\n> **{current_title}**")
         except Exception as e:
             print(f"Error checking Twitch title: {e}")
         await asyncio.sleep(60)
