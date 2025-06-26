@@ -2,12 +2,25 @@ import discord
 import aiohttp
 import asyncio
 import os
+from flask import Flask
+from threading import Thread
 
-TOKEN = os.getenv("TOKEN")
-CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
+# Mini web server to keep Replit alive
+app = Flask('')
+@app.route('/')
+def home():
+    return "Bot is alive!"
+def run():
+    app.run(host='0.0.0.0', port=8080)
+def keep_alive():
+    Thread(target=run).start()
+
+# Load environment variables
+TOKEN = os.environ["TOKEN"]
+CHANNEL_ID = int(os.environ["CHANNEL_ID"])
 TWITCH_USERNAME = "jasontheween"
-TWITCH_CLIENT_ID = os.getenv("TWITCH_CLIENT_ID")
-TWITCH_CLIENT_SECRET = os.getenv("TWITCH_CLIENT_SECRET")
+TWITCH_CLIENT_ID = os.environ["TWITCH_CLIENT_ID"]
+TWITCH_CLIENT_SECRET = os.environ["TWITCH_CLIENT_SECRET"]
 
 intents = discord.Intents.default()
 bot = discord.Client(intents=intents)
@@ -55,9 +68,11 @@ async def check_title_loop():
                 current_title = data["data"][0]["title"]
                 if current_title != last_title:
                     last_title = current_title
-                    await channel.send(f"@everyone 🔴 **{TWITCH_USERNAME}** changed stream title to:\n> **{current_title}**")
+                    await channel.send(f"🔴 {TWITCH_USERNAME} changed stream title to:\n> **{current_title}**")
         except Exception as e:
-            print(f"Error checking Twitch title: {e}")
+            print(f"Error: {e}")
         await asyncio.sleep(60)
 
+keep_alive()
 bot.run(TOKEN)
+
